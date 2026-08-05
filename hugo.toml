@@ -1,0 +1,46 @@
+baseURL = "https://your-project.pages.dev/"
+languageCode = "zh-cn"
+title = "我的网站"
+theme = "PaperMod"
+enableRobotsTXT = true
+enableEmoji = true
+
+[markup]
+  [markup.highlight]
+    style = "monokai"
+    lineNos = false
+  [markup.goldmark.renderer]
+    unsafe = true
+
+[[menu.main]]
+identifier = "home"
+name = "首页"
+url = "/"
+weight = 1
+
+[[menu.main]]
+identifier = "posts"
+name = "文章"
+url = "/posts/"
+weight = 2
+
+[[menu.main]]
+identifier = "about"
+name = "关于"
+url = "/about/"
+weight = 3
+
+[params]
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+
+  [params.homeInfoParams]
+    Title = "你好，欢迎来到我的网站 👋"
+    Content = "这是一个用 Hugo 搭建的静态网站。"
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
