@@ -2861,6 +2861,12 @@ input,textarea,select{font-family:var(--font-sans);outline:none}
           </div>
         </div>
         <button class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+        <div class="settings-card" style="margin-top:20px">
+          <h3>连接诊断</h3>
+          <p style="color:var(--text-tertiary);font-size:13px;margin-bottom:14px">测试 Token 权限和仓库连接状态，排查保存/删除失败问题</p>
+          <button class="btn btn-secondary" onclick="runDiagnostics()">运行诊断测试</button>
+          <div id="diagResults" style="margin-top:16px;font-family:var(--font-mono);font-size:13px;line-height:1.8;display:none"></div>
+        </div>
       </div>
     </main>
   </div>
@@ -2922,12 +2928,17 @@ function doLogin() {
   const btn = document.getElementById('loginBtn');
   btn.textContent = '验证中...';
   btn.disabled = true;
-  // Test API call
+  // Test API call - check repo access AND token scopes
   fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}`, {
     headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
   })
   .then(r => {
     if (!r.ok) throw new Error(r.status === 401 ? 'Token 无效或无权限' : '仓库不存在或无法访问');
+    // Check token scopes from response header
+    const scopes = r.headers.get('X-OAuth-Scopes') || '';
+    if (scopes && !scopes.includes('repo')) {
+      throw new Error('Token 缺少 repo 权限（仅有 ' + scopes + '）。请重新创建 Token 并勾选 repo 选项');
+    }
     return r.json();
   })
   .then(data => {
@@ -3250,7 +3261,7 @@ function savePost() {
   btn.disabled = true;
 
   const message = isEdit ? `update: 更新《${title}》` : `post: 新增《${title}》`;
-  const path = isEdit ? editPath : `contents/${filePath}`;
+  const path = `contents/${isEdit ? editPath : filePath}`;
   const saveFn = isEdit ? () => ghPutUpdate(path, content, message, editSha) : () => ghPut(path, content, message);
 
   saveFn()
@@ -3264,9 +3275,17 @@ function savePost() {
     .catch(err => {
       btn.textContent = '保存发布';
       btn.disabled = false;
-      err.json().then(data => {
-        toast('保存失败：' + (data.message || '未知错误'),'error');
-      }).catch(() => toast('保存失败，请检查网络','error'));
+      if (err.status === 404 || err.status === 403) {
+        toast('保存失败：Token 缺少写入权限。请重新创建 Token 并勾选 repo 权限','error');
+      } else if (err.status === 401) {
+        toast('保存失败：Token 无效或已过期，请重新登录','error');
+      } else if (err.status === 409) {
+        toast('保存失败：文件已存在或路径冲突，请更换 URL 路径','error');
+      } else {
+        err.json().then(data => {
+          toast('保存失败：' + (data.message || '未知错误') + ' (HTTP ' + err.status + ')','error');
+        }).catch(() => toast('保存失败，请检查网络 (HTTP ' + err.status + ')','error'));
+      }
     });
 }
 
@@ -3310,7 +3329,13 @@ function confirmDelete() {
       loadPosts();
     })
     .catch(err => {
-      err.json().then(data => toast('删除失败：' + (data.message||''),'error')).catch(() => toast('删除失败','error'));
+      if (err.status === 404 || err.status === 403) {
+        toast('删除失败：Token 缺少写入权限。请重新创建 Token 并勾选 repo 权限','error');
+      } else if (err.status === 401) {
+        toast('删除失败：Token 无效或已过期，请重新登录','error');
+      } else {
+        err.json().then(data => toast('删除失败：' + (data.message||'') + ' (HTTP ' + err.status + ')','error')).catch(() => toast('删除失败 (HTTP ' + err.status + ')','error'));
+      }
     });
 }
 
@@ -3375,7 +3400,13 @@ function saveSettings() {
 
     ghPutUpdate('contents/hugo.toml', content, 'config: 更新站点设置', data.sha)
       .then(() => toast('设置已保存！','success'))
-      .catch(err => err.json().then(d => toast('保存失败：'+(d.message||''),'error')).catch(() => toast('保存失败','error')));
+      .catch(err => {
+        if (err.status === 404 || err.status === 403) {
+          toast('保存失败：Token 缺少写入权限，请重新创建 Token 并勾选 repo 权限','error');
+        } else {
+          err.json().then(d => toast('保存失败：'+(d.message||'')+' ('+err.status+')','error')).catch(() => toast('保存失败','error'));
+        }
+      });
   }).catch(() => toast('无法读取配置文件','error'));
 }
 
