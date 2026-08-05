@@ -1,0 +1,8 @@
+name = "Comfy"
+license = "MIT"
+description = "A comfortable, card-style blog theme with sidebar"
+tags = ["blog", "dark", "responsive", "sidebar"]
+min_version = "0.100.0"
+
+[author]
+  name = "Blog Owner"

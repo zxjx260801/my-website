@@ -1,0 +1,33 @@
+{{ define "title" }}{{ .Title }}{{ end }}
+{{ define "main" }}
+<article class="article-page">
+  <div class="article-header">
+    {{ with .Params.categories }}
+    {{ range first 1 . }}
+    <span class="art-cat">{{ . }}</span>
+    {{ end }}
+    {{ end }}
+    <h1>{{ .Title }}</h1>
+    <div class="article-meta">
+      <span class="art-date">{{ .Date.Format "2006-01-02" }}</span>
+      <span class="art-dot"></span>
+      <span>{{ .ReadingTime }} 分钟阅读</span>
+      {{ with .Params.author }}
+      <span class="art-dot"></span>
+      <span>{{ . }}</span>
+      {{ end }}
+    </div>
+  </div>
+  <div class="article-content">
+    {{ .Content }}
+  </div>
+  <div class="article-footer">
+    <div class="article-tags">
+      {{ range .Params.tags }}
+      <span class="art-tag">{{ . }}</span>
+      {{ end }}
+    </div>
+    <a href="{{ .Site.BaseURL }}" class="pg-btn">返回首页</a>
+  </div>
+</article>
+{{ end }}

@@ -1,0 +1,39 @@
+{{ define "main" }}
+{{ $pages := .Pages }}
+{{ if .IsHome }}{{ $pages = .Site.RegularPages }}{{ end }}
+{{ range $pages.GroupByDate "2006" "desc" }}
+<div class="archive-group">
+  <div class="archive-head">
+    <h2>{{ .Key }}</h2>
+    <span class="archive-count">{{ len .Pages }} 篇</span>
+  </div>
+  {{ range .Pages }}
+  <article class="art-card" data-url="{{ .Permalink }}">
+    <div class="art-meta-top">
+      {{ with .Params.categories }}
+      {{ range first 1 . }}
+      <span class="art-cat">{{ . }}</span>
+      {{ end }}
+      {{ else }}
+      <span class="art-cat">文章</span>
+      {{ end }}
+      <span class="art-dot"></span>
+      <span class="art-date">{{ .Date.Format "2006-01-02" }}</span>
+    </div>
+    <h2 class="art-title">{{ .Title }}</h2>
+    <p class="art-desc">{{ .Summary | plainify | truncate 120 }}</p>
+    <div class="art-meta-bot">
+      {{ range .Params.tags }}
+      <span class="art-tag">{{ . }}</span>
+      {{ end }}
+      <span class="art-read">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        {{ .ReadingTime }} 分钟
+      </span>
+    </div>
+  </article>
+  {{ end }}
+</div>
+{{ end }}
+{{ partial "pagination.html" . }}
+{{ end }}

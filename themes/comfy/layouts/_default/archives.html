@@ -1,0 +1,31 @@
+{{ define "main" }}
+<div class="article-page">
+  <div class="article-header">
+    <h1>{{ .Title }}</h1>
+  </div>
+  <div class="article-content">
+    {{ range .Site.RegularPages.GroupByDate "2006" "desc" }}
+    <div class="archive-group">
+      <div class="archive-head">
+        <h2>{{ .Key }}</h2>
+        <span class="archive-count">{{ len .Pages }} 篇</span>
+      </div>
+      {{ range .Pages }}
+      <article class="art-card" data-url="{{ .Permalink }}" style="padding:16px 20px;">
+        <div class="art-meta-top">
+          {{ with .Params.categories }}
+          {{ range first 1 . }}
+          <span class="art-cat">{{ . }}</span>
+          {{ end }}
+          {{ end }}
+          <span class="art-dot"></span>
+          <span class="art-date">{{ .Date.Format "2006-01-02" }}</span>
+        </div>
+        <h2 class="art-title" style="font-size:16px;">{{ .Title }}</h2>
+      </article>
+      {{ end }}
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}

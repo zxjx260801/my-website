@@ -1,0 +1,13 @@
+{{ if .Paginator.HasPrev -}}
+<div class="pg">
+  {{ if .Paginator.HasPrev -}}
+  <a class="pg-btn" href="{{ .Paginator.Prev.URL }}">&laquo;</a>
+  {{ end -}}
+  {{ range .Paginator.Pagers -}}
+  <a class="pg-btn {{ if eq . $.Paginator }}active{{ end }}" href="{{ .URL }}">{{ .PageNumber }}</a>
+  {{ end -}}
+  {{ if .Paginator.HasNext -}}
+  <a class="pg-btn" href="{{ .Paginator.Next.URL }}">&raquo;</a>
+  {{ end -}}
+</div>
+{{ end -}}

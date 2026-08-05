@@ -1,0 +1,31 @@
+<footer class="site-footer">
+  <p>&copy; {{ now.Format "2006" }} {{ .Site.Title }} &middot; Powered by <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a></p>
+</footer>
+<script>
+(function() {
+  window.toggleTheme = function() {
+    var html = document.documentElement;
+    var current = html.getAttribute('data-theme') || 'dark';
+    var next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch(e) {}
+  };
+  try {
+    var saved = localStorage.getItem('theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  } catch(e) {}
+  var searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && this.value.trim()) {
+        window.location.href = '{{ "search" | absURL }}?q=' + encodeURIComponent(this.value.trim());
+      }
+    });
+  }
+  document.querySelectorAll('.art-card[data-url]').forEach(function(card) {
+    card.addEventListener('click', function() {
+      window.location.href = this.getAttribute('data-url');
+    });
+  });
+})();
+</script>
