@@ -11,4 +11,4 @@ draft: false
 ## 联系方式
 
 - Email: zxj20070424@outlook.com
-- Telegram:@ZXJX2681
+- TG:@ZXJX2681
