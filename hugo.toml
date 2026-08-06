@@ -10,12 +10,12 @@ pagination.pagerSize = 10
 
   [params.social]
     # 取消注释并填写你的社交账号
-    # youtube = "你的频道名"
-    # twitter = "你的用户名"
-    # bilibili = "你的UID"
-    # telegram = "你的用户名"
-    # github = "你的用户名"
-    # email = "你的邮箱"
+    youtube = "你的频道名"
+    twitter = "你的用户名"
+    bilibili = "你的UID"
+    telegram = "@ZXJX2681"
+    github = "你的用户名"
+    email = "zhang70424@gmail.com"
 
 [taxonomies]
   category = "categories"
