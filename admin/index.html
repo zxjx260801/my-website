@@ -2829,6 +2829,18 @@ input,textarea,select{font-family:var(--font-sans);outline:none}
           <div class="settings-row"><label>站点描述</label><input type="text" id="setDesc" placeholder="个人技术博客"></div>
         </div>
         <div class="settings-card">
+          <h3>个人头像</h3>
+          <div class="settings-row">
+            <label>启用头像</label>
+            <label class="toggle"><input type="checkbox" id="toggleProfile" onchange="document.getElementById('profileFields').style.display=this.checked?'':'none'"><span class="toggle-track"></span></label>
+          </div>
+          <div id="profileFields" style="display:none">
+            <div class="settings-row"><label>头像图片路径</label><input type="text" id="avatarUrl" placeholder="/avatar.png 或 https://..."></div>
+            <div class="settings-row"><label>头像副标题</label><input type="text" id="avatarSubtitle" placeholder="记录技术与生活"></div>
+            <div class="settings-row"><label>头像宽度(px)</label><input type="number" id="avatarWidth" value="120" style="width:100px"></div>
+          </div>
+        </div>
+        <div class="settings-card">
           <h3>首页 Hero 区域</h3>
           <div class="settings-row"><label>首页大标题</label><input type="text" id="homeTitle" placeholder="你好，欢迎来到我的网站"></div>
           <div class="settings-row"><label>首页副文案</label><input type="text" id="homeContent" placeholder="这是一个用 Hugo 搭建的静态网站。"></div>
@@ -3407,6 +3419,18 @@ function loadSettings() {
     if (homeTitleMatch) document.getElementById('homeTitle').value = homeTitleMatch[1];
     const homeContentMatch = content.match(/\[params\.homeInfoParams\][\s\S]*?Content\s*=\s*"(.*)"/m);
     if (homeContentMatch) document.getElementById('homeContent').value = homeContentMatch[1];
+    // Parse profileMode
+    const profileEnabled = /\[params\.profileMode\][\s\S]*?enabled\s*=\s*true/.test(content);
+    document.getElementById('toggleProfile').checked = profileEnabled;
+    document.getElementById('profileFields').style.display = profileEnabled ? '' : 'none';
+    if (profileEnabled) {
+      const imgMatch = content.match(/\[params\.profileMode\][\s\S]*?imageUrl\s*=\s*"(.*)"/m);
+      if (imgMatch) document.getElementById('avatarUrl').value = imgMatch[1];
+      const subMatch = content.match(/\[params\.profileMode\][\s\S]*?subtitle\s*=\s*"(.*)"/m);
+      if (subMatch) document.getElementById('avatarSubtitle').value = subMatch[1];
+      const wMatch = content.match(/\[params\.profileMode\][\s\S]*?imageWidth\s*=\s*(\d+)/m);
+      if (wMatch) document.getElementById('avatarWidth').value = wMatch[1];
+    }
     // Parse theme params
     document.getElementById('toggleReadingTime').checked = !/ShowReadingTime\s*=\s*false/.test(content);
     document.getElementById('togglePostNav').checked = !/ShowPostNavLinks\s*=\s*false/.test(content);
@@ -3504,6 +3528,18 @@ function saveSettings() {
     content = content.replace(/\[params\.homeInfoParams\][\s\S]*?(?=\[|$)/m, function(match) {
       return `[params.homeInfoParams]\n    Title = "${homeTitle}"\n    Content = "${homeContent}"\n`;
     });
+
+    // Replace profileMode
+    const profileEnabled = document.getElementById('toggleProfile').checked;
+    content = content.replace(/\[params\.profileMode\][\s\S]*?(?=\[|$)/m, '');
+    if (profileEnabled) {
+      const avatarUrl = document.getElementById('avatarUrl').value || '/avatar.png';
+      const subtitle = document.getElementById('avatarSubtitle').value || '';
+      const width = document.getElementById('avatarWidth').value || '120';
+      let profileBlock = `[params.profileMode]\n    enabled = true\n    imageUrl = "${avatarUrl}"\n    imageWidth = ${width}\n    imageHeight = ${width}\n`;
+      if (subtitle) profileBlock += `    subtitle = "${subtitle}"\n`;
+      content = content.replace(/(\[params\]\n)/, profileBlock + '\n$1');
+    }
 
     // Replace theme params
     const toggles = [
