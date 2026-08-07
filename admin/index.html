@@ -2685,6 +2685,10 @@ input,textarea,select{font-family:var(--font-sans);outline:none}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         新建文章
       </div>
+      <div class="nav-item" onclick="showPage('about-editor')" data-page="about-editor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        关于页面
+      </div>
       <div class="nav-divider"></div>
       <div class="nav-item" onclick="showPage('settings')" data-page="settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -2820,47 +2824,77 @@ input,textarea,select{font-family:var(--font-sans);outline:none}
         <div class="page-title">站点设置</div>
         <div class="settings-card">
           <h3>基本信息</h3>
+          <div class="settings-row"><label>站点标题</label><input type="text" id="setTitle" placeholder="我的博客"></div>
+          <div class="settings-row"><label>站点 URL</label><input type="text" id="setBaseURL" placeholder="https://example.com"></div>
+          <div class="settings-row"><label>站点描述</label><input type="text" id="setDesc" placeholder="个人技术博客"></div>
+        </div>
+        <div class="settings-card">
+          <h3>首页 Hero 区域</h3>
+          <div class="settings-row"><label>首页大标题</label><input type="text" id="homeTitle" placeholder="你好，欢迎来到我的网站"></div>
+          <div class="settings-row"><label>首页副文案</label><input type="text" id="homeContent" placeholder="这是一个用 Hugo 搭建的静态网站。"></div>
+        </div>
+        <div class="settings-card">
+          <h3>导航菜单</h3>
+          <div id="menuList" style="margin-bottom:12px"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input type="text" id="newMenuName" placeholder="菜单名称" style="flex:1;min-width:120px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 14px;color:var(--text-primary);font-size:14px">
+            <input type="text" id="newMenuUrl" placeholder="URL 路径" style="flex:1;min-width:120px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 14px;color:var(--text-primary);font-size:14px">
+            <input type="number" id="newMenuWeight" placeholder="排序" value="10" style="width:80px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 14px;color:var(--text-primary);font-size:14px">
+            <button class="btn btn-sm btn-primary" onclick="addMenuItem()">添加</button>
+          </div>
+        </div>
+        <div class="settings-card">
+          <h3>主题配置</h3>
           <div class="settings-row">
-            <label>站点标题</label>
-            <input type="text" id="setTitle" placeholder="我的博客">
+            <label>显示阅读时间</label>
+            <label class="toggle"><input type="checkbox" id="toggleReadingTime" checked><span class="toggle-track"></span></label>
           </div>
           <div class="settings-row">
-            <label>个人简介</label>
-            <input type="text" id="setBio" placeholder="记录技术与生活">
+            <label>显示文章导航</label>
+            <label class="toggle"><input type="checkbox" id="togglePostNav" checked><span class="toggle-track"></span></label>
           </div>
           <div class="settings-row">
-            <label>站点描述</label>
-            <input type="text" id="setDesc" placeholder="个人技术博客">
+            <label>显示面包屑</label>
+            <label class="toggle"><input type="checkbox" id="toggleBreadCrumb" checked><span class="toggle-track"></span></label>
+          </div>
+          <div class="settings-row">
+            <label>显示代码复制按钮</label>
+            <label class="toggle"><input type="checkbox" id="toggleCodeCopy" checked><span class="toggle-track"></span></label>
+          </div>
+          <div class="settings-row">
+            <label>显示字数统计</label>
+            <label class="toggle"><input type="checkbox" id="toggleWordCount" checked><span class="toggle-track"></span></label>
           </div>
         </div>
         <div class="settings-card">
           <h3>社交链接</h3>
-          <div class="settings-row">
-            <label>GitHub</label>
-            <input type="text" id="socialGithub" placeholder="用户名">
-          </div>
-          <div class="settings-row">
-            <label>YouTube</label>
-            <input type="text" id="socialYoutube" placeholder="频道名">
-          </div>
-          <div class="settings-row">
-            <label>Twitter</label>
-            <input type="text" id="socialTwitter" placeholder="用户名">
-          </div>
-          <div class="settings-row">
-            <label>Bilibili</label>
-            <input type="text" id="socialBilibili" placeholder="UID">
-          </div>
-          <div class="settings-row">
-            <label>Telegram</label>
-            <input type="text" id="socialTelegram" placeholder="用户名">
-          </div>
-          <div class="settings-row">
-            <label>Email</label>
-            <input type="text" id="socialEmail" placeholder="邮箱地址">
-          </div>
+          <div class="settings-row"><label>GitHub</label><input type="text" id="socialGithub" placeholder="用户名"></div>
+          <div class="settings-row"><label>YouTube</label><input type="text" id="socialYoutube" placeholder="频道名"></div>
+          <div class="settings-row"><label>Twitter</label><input type="text" id="socialTwitter" placeholder="用户名"></div>
+          <div class="settings-row"><label>Bilibili</label><input type="text" id="socialBilibili" placeholder="UID"></div>
+          <div class="settings-row"><label>Telegram</label><input type="text" id="socialTelegram" placeholder="用户名"></div>
+          <div class="settings-row"><label>Email</label><input type="text" id="socialEmail" placeholder="邮箱地址"></div>
         </div>
         <button class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+      </div>
+
+      <!-- About Editor Page -->
+      <div class="page" id="page-about-editor">
+        <div class="page-title">关于页面编辑</div>
+        <div class="settings-card">
+          <h3>编辑 content/about.md</h3>
+          <div class="md-editor-wrap">
+            <div class="md-editor-pane">
+              <div class="md-editor-header">Markdown</div>
+              <textarea class="md-textarea" id="aboutContent" oninput="renderAboutPreview()" placeholder="加载中..."></textarea>
+            </div>
+            <div class="md-editor-pane">
+              <div class="md-editor-header">预览</div>
+              <div class="md-preview" id="aboutPreview"></div>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="saveAboutBtn" onclick="saveAbout()">保存关于页面</button>
+        </div>
       </div>
     </main>
   </div>
@@ -3142,6 +3176,7 @@ function showPage(name) {
   document.querySelector(`.nav-item[data-page="${name}"]`)?.classList.add('active');
   if (name === 'new') resetEditor();
   if (name === 'dashboard' || name === 'posts') renderAll();
+  if (name === 'about-editor') loadAbout();
 }
 
 // Editor functions
@@ -3317,38 +3352,100 @@ function confirmDelete() {
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
 // Settings
+let MENU_ITEMS = [];
+let ABOUT_SHA = '';
+
 function loadSettings() {
   ghGet('contents/hugo.toml').then(data => {
     const content = decodeURIComponent(escape(atob(data.content)));
-    // Parse hugo.toml
+    // Parse basic info
     const titleMatch = content.match(/^title\s*=\s*"(.*)"/m);
     if (titleMatch) document.getElementById('setTitle').value = titleMatch[1];
-    const bioMatch = content.match(/^bio\s*=\s*"(.*)"/m);
-    if (bioMatch) document.getElementById('setBio').value = bioMatch[1];
+    const urlMatch = content.match(/^baseURL\s*=\s*"(.*)"/m);
+    if (urlMatch) document.getElementById('setBaseURL').value = urlMatch[1];
     const descMatch = content.match(/^description\s*=\s*"(.*)"/m);
     if (descMatch) document.getElementById('setDesc').value = descMatch[1];
-    const ghMatch = content.match(/github\s*=\s*"(.*)"/);
+    // Parse homeInfoParams
+    const homeTitleMatch = content.match(/\[params\.homeInfoParams\][\s\S]*?Title\s*=\s*"(.*)"/m);
+    if (homeTitleMatch) document.getElementById('homeTitle').value = homeTitleMatch[1];
+    const homeContentMatch = content.match(/\[params\.homeInfoParams\][\s\S]*?Content\s*=\s*"(.*)"/m);
+    if (homeContentMatch) document.getElementById('homeContent').value = homeContentMatch[1];
+    // Parse theme params
+    document.getElementById('toggleReadingTime').checked = !/ShowReadingTime\s*=\s*false/.test(content);
+    document.getElementById('togglePostNav').checked = !/ShowPostNavLinks\s*=\s*false/.test(content);
+    document.getElementById('toggleBreadCrumb').checked = !/ShowBreadCrumbs\s*=\s*false/.test(content);
+    document.getElementById('toggleCodeCopy').checked = !/ShowCodeCopyButtons\s*=\s*false/.test(content);
+    document.getElementById('toggleWordCount').checked = !/ShowWordCount\s*=\s*false/.test(content);
+    // Parse menu items
+    MENU_ITEMS = [];
+    const menuRegex = /\[\[menu\.main\]\]\nidentifier\s*=\s*"(\w+)"\nname\s*=\s*"([^"]*)"\nurl\s*=\s*"([^"]*)"\nweight\s*=\s*(\d+)/g;
+    let m;
+    while ((m = menuRegex.exec(content)) !== null) {
+      MENU_ITEMS.push({ identifier: m[1], name: m[2], url: m[3], weight: parseInt(m[4]) });
+    }
+    renderMenuList();
+    // Social links
+    const ghMatch = content.match(/github\s*=\s*"([^"]*)"/);
     if (ghMatch) document.getElementById('socialGithub').value = ghMatch[1];
-    const ytMatch = content.match(/youtube\s*=\s*"(.*)"/);
+    const ytMatch = content.match(/youtube\s*=\s*"([^"]*)"/);
     if (ytMatch) document.getElementById('socialYoutube').value = ytMatch[1];
-    const twMatch = content.match(/twitter\s*=\s*"(.*)"/);
+    const twMatch = content.match(/twitter\s*=\s*"([^"]*)"/);
     if (twMatch) document.getElementById('socialTwitter').value = twMatch[1];
-    const biMatch = content.match(/bilibili\s*=\s*"(.*)"/);
+    const biMatch = content.match(/bilibili\s*=\s*"([^"]*)"/);
     if (biMatch) document.getElementById('socialBilibili').value = biMatch[1];
-    const tgMatch = content.match(/telegram\s*=\s*"(.*)"/);
+    const tgMatch = content.match(/telegram\s*=\s*"([^"]*)"/);
     if (tgMatch) document.getElementById('socialTelegram').value = tgMatch[1];
-    const emMatch = content.match(/email\s*=\s*"(.*)"/);
+    const emMatch = content.match(/email\s*=\s*"([^"]*)"/);
     if (emMatch) document.getElementById('socialEmail').value = emMatch[1];
   }).catch(() => {});
 }
 
+function renderMenuList() {
+  const list = document.getElementById('menuList');
+  if (!MENU_ITEMS.length) {
+    list.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;padding:8px 0">暂无菜单项，请添加</div>';
+    return;
+  }
+  list.innerHTML = MENU_ITEMS.map((item, i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-elevated);border-radius:var(--radius-sm);margin-bottom:6px">
+      <span style="font-weight:600;color:var(--accent);min-width:24px">${item.weight}</span>
+      <span style="flex:1;color:var(--text-primary)">${escapeHTML(item.name)}</span>
+      <span style="color:var(--text-tertiary);font-size:12px;font-family:var(--font-mono)">${escapeHTML(item.url)}</span>
+      <div class="icon-btn danger" onclick="removeMenuItem(${i})" title="删除">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addMenuItem() {
+  const name = document.getElementById('newMenuName').value.trim();
+  const url = document.getElementById('newMenuUrl').value.trim();
+  const weight = parseInt(document.getElementById('newMenuWeight').value) || 10;
+  if (!name || !url) { toast('请填写菜单名称和 URL','error'); return; }
+  const identifier = name.toLowerCase().replace(/[^\w]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+  MENU_ITEMS.push({ identifier, name, url, weight });
+  MENU_ITEMS.sort((a,b) => a.weight - b.weight);
+  renderMenuList();
+  document.getElementById('newMenuName').value = '';
+  document.getElementById('newMenuUrl').value = '';
+  document.getElementById('newMenuWeight').value = '10';
+  toast('菜单项已添加，保存设置后生效','info');
+}
+
+function removeMenuItem(i) {
+  MENU_ITEMS.splice(i, 1);
+  renderMenuList();
+}
+
 function saveSettings() {
-  // Fetch current hugo.toml first to get sha and content
   ghGet('contents/hugo.toml').then(data => {
     let content = decodeURIComponent(escape(atob(data.content)));
     const title = document.getElementById('setTitle').value;
-    const bio = document.getElementById('setBio').value;
+    const baseURL = document.getElementById('setBaseURL').value;
     const desc = document.getElementById('setDesc').value;
+    const homeTitle = document.getElementById('homeTitle').value;
+    const homeContent = document.getElementById('homeContent').value;
     const gh = document.getElementById('socialGithub').value;
     const yt = document.getElementById('socialYoutube').value;
     const tw = document.getElementById('socialTwitter').value;
@@ -3356,11 +3453,42 @@ function saveSettings() {
     const tg = document.getElementById('socialTelegram').value;
     const em = document.getElementById('socialEmail').value;
 
-    // Replace values
+    // Replace basic values
     content = content.replace(/^title\s*=\s*".*"/m, `title = "${title}"`);
-    content = content.replace(/^bio\s*=\s*".*"/m, `bio = "${bio}"`);
-    content = content.replace(/^description\s*=\s*".*"/m, `description = "${desc}"`);
-    // Social links - replace commented or existing
+    content = content.replace(/^baseURL\s*=\s*".*"/m, `baseURL = "${baseURL}"`);
+    if (desc) {
+      if (/^description\s*=\s*".*"/m.test(content)) content = content.replace(/^description\s*=\s*".*"/m, `description = "${desc}"`);
+      else content = content.replace(/^title\s*=.*\n/, `$&\ndescription = "${desc}"\n`);
+    }
+
+    // Replace homeInfoParams
+    content = content.replace(/\[params\.homeInfoParams\][\s\S]*?(?=\[|$)/m, function(match) {
+      return `[params.homeInfoParams]\n    Title = "${homeTitle}"\n    Content = "${homeContent}"\n`;
+    });
+
+    // Replace theme params
+    const toggles = [
+      ['ShowReadingTime', 'toggleReadingTime'],
+      ['ShowPostNavLinks', 'togglePostNav'],
+      ['ShowBreadCrumbs', 'toggleBreadCrumb'],
+      ['ShowCodeCopyButtons', 'toggleCodeCopy'],
+      ['ShowWordCount', 'toggleWordCount']
+    ];
+    toggles.forEach(([key, id]) => {
+      const val = document.getElementById(id).checked;
+      const regex = new RegExp(`\\b${key}\\s*=\\s*(true|false)`, 'm');
+      if (regex.test(content)) content = content.replace(regex, `${key} = ${val}`);
+      else if (!val) content = content.replace(/(\[params\]\n)/, `$1    ${key} = false\n`);
+    });
+
+    // Replace menu items
+    content = content.replace(/(?:\[\[menu\.main\]\]\nidentifier\s*=\s*"[^"]*"\nname\s*=\s*"[^"]*"\nurl\s*=\s*"[^"]*"\nweight\s*=\s*\d+\n)+/g, '');
+    if (MENU_ITEMS.length) {
+      const menuBlock = MENU_ITEMS.map(m => `[[menu.main]]\nidentifier = "${m.identifier}"\nname = "${m.name}"\nurl = "${m.url}"\nweight = ${m.weight}\n`).join('');
+      content = content.replace(/(\[params\]\n)/, menuBlock + '\n$1');
+    }
+
+    // Social links
     const socialReplacements = [
       ['github', gh], ['youtube', yt], ['twitter', tw], ['bilibili', bi], ['telegram', tg], ['email', em]
     ];
@@ -3377,6 +3505,49 @@ function saveSettings() {
       .then(() => toast('设置已保存！','success'))
       .catch(err => err.json().then(d => toast('保存失败：'+(d.message||''),'error')).catch(() => toast('保存失败','error')));
   }).catch(() => toast('无法读取配置文件','error'));
+}
+
+// About page
+function loadAbout() {
+  const ta = document.getElementById('aboutContent');
+  ta.value = '加载中...';
+  ghGet('contents/content/about.md').then(data => {
+    const content = decodeURIComponent(escape(atob(data.content)));
+    ABOUT_SHA = data.sha;
+    ta.value = content;
+    renderAboutPreview();
+  }).catch(() => {
+    ta.value = '无法加载关于页面';
+  });
+}
+
+function renderAboutPreview() {
+  const md = document.getElementById('aboutContent').value;
+  const preview = document.getElementById('aboutPreview');
+  if (typeof marked !== 'undefined') {
+    preview.innerHTML = marked.parse(md);
+  } else {
+    preview.textContent = md;
+  }
+}
+
+function saveAbout() {
+  const content = document.getElementById('aboutContent').value;
+  const btn = document.getElementById('saveAboutBtn');
+  btn.textContent = '保存中...';
+  btn.disabled = true;
+  ghPutUpdate('contents/content/about.md', content, 'update: 更新关于页面', ABOUT_SHA)
+    .then(r => {
+      ABOUT_SHA = r.content.sha;
+      toast('关于页面已保存！','success');
+      btn.textContent = '保存关于页面';
+      btn.disabled = false;
+    })
+    .catch(err => {
+      btn.textContent = '保存关于页面';
+      btn.disabled = false;
+      err.json().then(d => toast('保存失败：'+(d.message||''),'error')).catch(() => toast('保存失败','error'));
+    });
 }
 
 // Utilities
