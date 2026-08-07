@@ -2844,6 +2844,26 @@ input,textarea,select{font-family:var(--font-sans);outline:none}
           </div>
         </div>
         <div class="settings-card">
+          <h3>主题风格</h3>
+          <div id="themeSelector" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div class="theme-card active" data-theme="modern" onclick="selectTheme('modern')" style="background:var(--bg-elevated);border:2px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;text-align:center;transition:var(--transition)">
+              <div style="font-size:28px;margin-bottom:8px">◻</div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:2px">简约现代</div>
+              <div style="font-size:11px;color:var(--text-tertiary)">Notion / Linear 风格</div>
+            </div>
+            <div class="theme-card" data-theme="cyber" onclick="selectTheme('cyber')" style="background:var(--bg-elevated);border:2px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;text-align:center;transition:var(--transition)">
+              <div style="font-size:28px;margin-bottom:8px">◆</div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:2px">赛博暗色</div>
+              <div style="font-size:11px;color:var(--text-tertiary)">霓虹科技感</div>
+            </div>
+            <div class="theme-card" data-theme="fresh" onclick="selectTheme('fresh')" style="background:var(--bg-elevated);border:2px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;text-align:center;transition:var(--transition)">
+              <div style="font-size:28px;margin-bottom:8px">🌸</div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:2px">日系清新</div>
+              <div style="font-size:11px;color:var(--text-tertiary)">温暖舒适阅读</div>
+            </div>
+          </div>
+        </div>
+        <div class="settings-card">
           <h3>主题配置</h3>
           <div class="settings-row">
             <label>显示阅读时间</label>
@@ -3354,10 +3374,27 @@ function closeModal(id) { document.getElementById(id).classList.remove('show'); 
 // Settings
 let MENU_ITEMS = [];
 let ABOUT_SHA = '';
+let CURRENT_THEME = 'modern';
+
+function selectTheme(name) {
+  CURRENT_THEME = name;
+  document.querySelectorAll('.theme-card').forEach(c => {
+    c.classList.remove('active');
+    c.style.borderColor = 'var(--border)';
+  });
+  const card = document.querySelector(`.theme-card[data-theme="${name}"]`);
+  if (card) {
+    card.classList.add('active');
+    card.style.borderColor = 'var(--accent)';
+  }
+}
 
 function loadSettings() {
   ghGet('contents/hugo.toml').then(data => {
     const content = decodeURIComponent(escape(atob(data.content)));
+    // Parse current theme
+    const cssMatch = content.match(/custom_css\s*=\s*\["css\/theme-(\w+)\.css"\]/);
+    if (cssMatch) { CURRENT_THEME = cssMatch[1]; selectTheme(CURRENT_THEME); }
     // Parse basic info
     const titleMatch = content.match(/^title\s*=\s*"(.*)"/m);
     if (titleMatch) document.getElementById('setTitle').value = titleMatch[1];
@@ -3456,6 +3493,8 @@ function saveSettings() {
     // Replace basic values
     content = content.replace(/^title\s*=\s*".*"/m, `title = "${title}"`);
     content = content.replace(/^baseURL\s*=\s*".*"/m, `baseURL = "${baseURL}"`);
+    // Replace theme
+    content = content.replace(/custom_css\s*=\s*\["css\/theme-\w+\.css"\]/, `custom_css = ["css/theme-${CURRENT_THEME}.css"]`);
     if (desc) {
       if (/^description\s*=\s*".*"/m.test(content)) content = content.replace(/^description\s*=\s*".*"/m, `description = "${desc}"`);
       else content = content.replace(/^title\s*=.*\n/, `$&\ndescription = "${desc}"\n`);
