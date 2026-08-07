@@ -1,6 +1,6 @@
 baseURL = "https://your-project.pages.dev/"
 languageCode = "zh-cn"
-title = "我的网站"
+title = "知序简析 / Zexanal"
 theme = "PaperMod"
 enableRobotsTXT = true
 enableEmoji = true
